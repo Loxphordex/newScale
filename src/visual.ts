@@ -64,6 +64,7 @@ export class Visual implements IVisual {
     private yAxis: Selection<SVGElement>;
     private scaleGroup: Selection<SVGElement>;
     private barGroup: Selection<SVGElement>;
+    private barLines: Selection<SVGElement>;
     private gradient: Selection<SVGElement>;
     private display: Selection<SVGElement>;
     private xPadding = 100;
@@ -80,6 +81,8 @@ export class Visual implements IVisual {
             .classed('y-axis', true);
         this.barGroup = this.svg.append('g')
             .classed('bar-group', true);
+        this.barLines = this.svg.append('g')
+            .classed('bar-lines', true);
         this.scaleGroup = this.svg.append('g')
             .classed('scale-group', true);
         this.gradient = this.svg.append('defs')
@@ -166,6 +169,24 @@ export class Visual implements IVisual {
             .attr('y', (d) => yScale(d.category));
         bars.exit().remove();
 
+        let lines = this.barLines
+            .selectAll('.line')
+            .data(this.viewModel.dataPoints);
+        lines.enter()
+            .append('rect')
+            .classed('line', true)
+            .attr('width', 2)
+            .attr('height', yScale.bandwidth())
+            .attr('x', xScale(0))
+            .attr('y', (d) => yScale(d.category))
+            .style('fill', 'rgb(48, 53, 56)');
+        lines
+            .attr('width', 2)
+            .attr('height', yScale.bandwidth())
+            .attr('x', xScale(0))
+            .attr('y', (d) => yScale(d.category));
+        lines.exit().remove();
+
         let scale = this.scaleGroup
             .selectAll('.scale-bar')
             .data(this.viewModel.dataPoints);
@@ -196,14 +217,14 @@ export class Visual implements IVisual {
             .attr('x', (d) => (d.value >= 0)
                 ? xScale(0) + posXScale(d.value) + (width / 80)
                 : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
-            .attr('y', (d) => yScale(d.category) + (height / 23))
+            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2.9))
             .style('font-weight', 'bold')
             .style('color', 'rgb(48, 53, 56)');
         display
             .attr('x', (d) => (d.value >= 0)
                 ? xScale(0) + posXScale(d.value) + (width / 80)
                 : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
-            .attr('y', (d) => yScale(d.category) + (height / 23));
+            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2.9));
     }
 
     private getViewModel(options: VisualUpdateOptions): ViewModel {
