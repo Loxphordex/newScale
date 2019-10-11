@@ -67,7 +67,7 @@ export class Visual implements IVisual {
     private barLines: Selection<SVGElement>;
     private gradient: Selection<SVGElement>;
     private display: Selection<SVGElement>;
-    private xPadding = 80;
+    private xPadding = 120;
     private yPadding = 25;
 
     constructor(options: VisualConstructorOptions) {
@@ -228,7 +228,7 @@ export class Visual implements IVisual {
             .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2.9));
 
         this.svg
-            .attr('transform', 'translate(40, -20)');
+            .attr('transform', 'translate(60, -20)');
     }
 
     private getViewModel(options: VisualUpdateOptions): ViewModel {
