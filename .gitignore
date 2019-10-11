@@ -1,0 +1,7 @@
+.DS_Store
+node_modules
+.tmp
+.api
+.api/*
+*.log
+RVisualTutorial/TutorialFunnelPlot/chapter1_R/.Rhistory
