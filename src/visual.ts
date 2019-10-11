@@ -67,7 +67,8 @@ export class Visual implements IVisual {
     private barLines: Selection<SVGElement>;
     private gradient: Selection<SVGElement>;
     private display: Selection<SVGElement>;
-    private xPadding = 100;
+    private xPadding = 80;
+    private yPadding = 25;
 
     constructor(options: VisualConstructorOptions) {
         this.host = options.host;
@@ -107,7 +108,7 @@ export class Visual implements IVisual {
             .domain([0, 100])
             .range([0, (width / 2) - this.xPadding]);
         let xAxis = this.xAxis;
-        xAxis.attr('transform', `translate(0, ${height - 100})`)
+        xAxis.attr('transform', `translate(0, ${height - this.yPadding})`)
             .call(d3.axisBottom(xScale))
             .selectAll('text')
             .attr('transform', 'translate(0, 2)');
@@ -115,14 +116,14 @@ export class Visual implements IVisual {
             // .style('text-anchor', 'end');
 
         let yScale = d3.scaleBand()
-            .range([100, height - 100])
+            .range([this.yPadding, height - this.yPadding])
             .domain(this.viewModel.dataPoints.map(d => d.category))
             .padding(0.3);
         let yAxis = this.yAxis;
         yAxis.call(d3.axisLeft(yScale))
-            .attr('transform', 'translate(100, 0)');
+            .attr('transform', `translate(${this.xPadding}, 0)`);
         let innerYScale = d3.scaleBand()
-            .range([100, height - 100])
+            .range([this.yPadding, height - this.yPadding])
             .domain(this.viewModel.dataPoints.map(d => d.category))
             .padding(0.84);
 
@@ -225,6 +226,9 @@ export class Visual implements IVisual {
                 ? xScale(0) + posXScale(d.value) + (width / 80)
                 : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
             .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2.9));
+
+        this.svg
+            .attr('transform', 'translate(40, -20)');
     }
 
     private getViewModel(options: VisualUpdateOptions): ViewModel {

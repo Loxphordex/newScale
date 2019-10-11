@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "author": {"name":"Silas Hallahan","email":"silasishallahan@gmail.com"},
+    "resources": [
+        {
+            "resourceId": "rId0",
+            "sourceType": 5,
+            "file": "resources/newScale2B0F7D96714C443ABD371437AA3415A2.pbiviz.json"
+        }
+    ],
+    "visual": {"name":"newScale","displayName":"newScale","guid":"newScale2B0F7D96714C443ABD371437AA3415A2","visualClassName":"Visual","version":"1.0.0","description":"n/a","supportUrl":"n/a","gitHubUrl":"n/a"},
+    "metadata": {
+        "pbivizjson": {
+            "resourceId": "rId0"
+        }
+    }  
+}

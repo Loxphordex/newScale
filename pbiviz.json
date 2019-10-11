@@ -1,1 +1,25 @@
-{"visual":{"name":"newScale","displayName":"newScale","guid":"newScale2B0F7D96714C443ABD371437AA3415A2","visualClassName":"Visual","version":"1.0.0","description":"","supportUrl":"","gitHubUrl":""},"apiVersion":"2.6.0","author":{"name":"","email":""},"assets":{"icon":"assets/icon.png"},"externalJS":null,"style":"style/visual.less","capabilities":"capabilities.json","dependencies":null,"stringResources":[]}
+{
+    "visual": {
+        "name": "newScale",
+        "displayName": "newScale",
+        "guid": "newScale2B0F7D96714C443ABD371437AA3415A2",
+        "visualClassName": "Visual",
+        "version": "1.0.0",
+        "description": "n/a",
+        "supportUrl": "n/a",
+        "gitHubUrl": "n/a"
+    },
+    "apiVersion": "2.6.0",
+    "author": {
+        "name": "Silas Hallahan",
+        "email": "silasishallahan@gmail.com"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "externalJS": null,
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}
