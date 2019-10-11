@@ -66,7 +66,7 @@ export class Visual implements IVisual {
     private barGroup: Selection<SVGElement>;
     private gradient: Selection<SVGElement>;
     private display: Selection<SVGElement>;
-    private xPadding = 80;
+    private xPadding = 100;
 
     constructor(options: VisualConstructorOptions) {
         this.host = options.host;
@@ -104,23 +104,24 @@ export class Visual implements IVisual {
             .domain([0, 100])
             .range([0, (width / 2) - this.xPadding]);
         let xAxis = this.xAxis;
-        xAxis.attr('transform', `translate(0, ${height - (height / 12)})`)
+        xAxis.attr('transform', `translate(0, ${height - 100})`)
             .call(d3.axisBottom(xScale))
             .selectAll('text')
-            .attr('transform', 'translate(-10, 0)rotate(-45)')
-            .style('text-anchor', 'end');
+            .attr('transform', 'translate(0, 2)');
+            // .attr('transform', 'translate(-10, 0)rotate(-45)')
+            // .style('text-anchor', 'end');
 
         let yScale = d3.scaleBand()
-            .range([20, height - 20])
+            .range([100, height - 100])
             .domain(this.viewModel.dataPoints.map(d => d.category))
-            .padding(0.65);
+            .padding(0.3);
         let yAxis = this.yAxis;
         yAxis.call(d3.axisLeft(yScale))
-            .attr('transform', 'translate(80, 0)');
+            .attr('transform', 'translate(100, 0)');
         let innerYScale = d3.scaleBand()
-            .range([0, height])
+            .range([100, height - 100])
             .domain(this.viewModel.dataPoints.map(d => d.category))
-            .padding(0.95);
+            .padding(0.84);
 
         let grad = this.gradient
             .append('linearGradient');
@@ -151,7 +152,7 @@ export class Visual implements IVisual {
         bars.enter()
             .append('rect')
             .classed('bar', true)
-            .attr('width', width - 160)
+            .attr('width', width - (this.xPadding * 2))
             .attr('height', yScale.bandwidth())
             .attr('x', xScale(-100))
             .attr('y', (d) => yScale(d.category))
@@ -159,10 +160,11 @@ export class Visual implements IVisual {
             .attr('ry', 2)
             .attr('fill', 'url(#gradient)');
         bars
-            .attr('width', width - 160)
+            .attr('width', width - (this.xPadding * 2))
             .attr('height', yScale.bandwidth())
             .attr('x', xScale(-100))
             .attr('y', (d) => yScale(d.category));
+        bars.exit().remove();
 
         let scale = this.scaleGroup
             .selectAll('.scale-bar')
@@ -173,28 +175,35 @@ export class Visual implements IVisual {
             .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
             .attr('height', innerYScale.bandwidth())
             .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
-            .attr('y', (d) => yScale(d.category) + (height / 30))
+            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2))
             .attr('rx', 1)
-            .attr('ry', 1);
+            .attr('ry', 1)
+            .style('fill', 'rgb(48, 53, 56)');
         scale
             .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
             .attr('height', innerYScale.bandwidth())
             .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
-            .attr('y', (d) => yScale(d.category) + (height / 30));
+            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2));
+        scale.exit().remove();
 
         let display = this.display
             .selectAll('.display-num')
-            .data(this.viewModel.dataPoints)
+            .data(this.viewModel.dataPoints);
         display.enter()
             .append('text')
             .classed('display-num', true)
             .text((d) => `${d.value}`)
-            .attr('x', () => width - 50)
-            .attr('y', (d) => yScale(d.category) + (height / 25))
-            .style('font-weight', 'bold');
+            .attr('x', (d) => (d.value >= 0)
+                ? xScale(0) + posXScale(d.value) + (width / 80)
+                : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
+            .attr('y', (d) => yScale(d.category) + (height / 23))
+            .style('font-weight', 'bold')
+            .style('color', 'rgb(48, 53, 56)');
         display
-            .attr('x', () => width - 50)
-            .attr('y', (d) => yScale(d.category) + (height / 25));
+            .attr('x', (d) => (d.value >= 0)
+                ? xScale(0) + posXScale(d.value) + (width / 80)
+                : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
+            .attr('y', (d) => yScale(d.category) + (height / 23));
     }
 
     private getViewModel(options: VisualUpdateOptions): ViewModel {
