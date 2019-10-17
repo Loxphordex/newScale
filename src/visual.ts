@@ -66,6 +66,7 @@ export class Visual implements IVisual {
     private barGroup: Selection<SVGElement>;
     private barLines: Selection<SVGElement>;
     private gradient: Selection<SVGElement>;
+    private negativeGradient: Selection<SVGElement>;
     private display: Selection<SVGElement>;
     private xPadding = 120;
     private yPadding = 25;
@@ -88,6 +89,8 @@ export class Visual implements IVisual {
             .classed('scale-group', true);
         this.gradient = this.svg.append('defs')
             .classed('gradient', true);
+        this.negativeGradient = this.svg.append('defs')
+            .classed('negative-gradient', true);
         this.display = this.svg.append('g')
             .classed('display', true);
     }
@@ -112,8 +115,6 @@ export class Visual implements IVisual {
             .call(d3.axisBottom(xScale))
             .selectAll('text')
             .attr('transform', 'translate(0, 2)');
-            // .attr('transform', 'translate(-10, 0)rotate(-45)')
-            // .style('text-anchor', 'end');
 
         let yScale = d3.scaleBand()
             .range([this.yPadding, height - this.yPadding])
@@ -138,15 +139,29 @@ export class Visual implements IVisual {
             .attr('spreadMethod', 'pad');
         grad.append('stop')
             .attr('offset', '0%')
-            .attr('stop-color', '#c00')
-            .attr('stop-opacity', 1);
-        grad.append('stop')
-            .attr('offset', '50%')
             .attr('stop-color', '#f0ee03')
             .attr('stop-opacity', 1);
         grad.append('stop')
             .attr('offset', '100%')
             .attr('stop-color', '#0c0')
+            .attr('stop-opacity', 1);
+
+        let negGrad = this.negativeGradient
+            .append('linearGradient');
+        negGrad
+            .attr('id', 'negative-gradient')
+            .attr('x1', '0%')
+            .attr('y1', '0%')
+            .attr('x2', '100%')
+            .attr('y2', '0%')
+            .attr('spreadMethod', 'pad');
+        negGrad.append('stop')
+            .attr('offset', '20%')
+            .attr('stop-color', '#c00')
+            .attr('stop-opacity', 1);
+        negGrad.append('stop')
+            .attr('offset', '100%')
+            .attr('stop-color', '#f0ee03')
             .attr('stop-opacity', 1);
 
 
@@ -156,57 +171,57 @@ export class Visual implements IVisual {
         bars.enter()
             .append('rect')
             .classed('bar', true)
-            .attr('width', width - (this.xPadding * 2))
+            .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
             .attr('height', yScale.bandwidth())
-            .attr('x', xScale(-100))
+            .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
             .attr('y', (d) => yScale(d.category))
             .attr('rx', 2)
             .attr('ry', 2)
-            .attr('fill', 'url(#gradient)');
+            .attr('fill', (d) => (d.value > 0) ? 'url(#gradient)' : 'url(#negative-gradient)');
         bars
-            .attr('width', width - (this.xPadding * 2))
+            .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
             .attr('height', yScale.bandwidth())
-            .attr('x', xScale(-100))
+            .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
             .attr('y', (d) => yScale(d.category));
         bars.exit().remove();
 
-        let lines = this.barLines
-            .selectAll('.line')
-            .data(this.viewModel.dataPoints);
-        lines.enter()
-            .append('rect')
-            .classed('line', true)
-            .attr('width', 2)
-            .attr('height', yScale.bandwidth())
-            .attr('x', xScale(0))
-            .attr('y', (d) => yScale(d.category))
-            .style('fill', 'rgb(48, 53, 56)');
-        lines
-            .attr('width', 2)
-            .attr('height', yScale.bandwidth())
-            .attr('x', xScale(0))
-            .attr('y', (d) => yScale(d.category));
-        lines.exit().remove();
+        // let lines = this.barLines
+        //     .selectAll('.line')
+        //     .data(this.viewModel.dataPoints);
+        // lines.enter()
+        //     .append('rect')
+        //     .classed('line', true)
+        //     .attr('width', 2)
+        //     .attr('height', yScale.bandwidth())
+        //     .attr('x', xScale(0))
+        //     .attr('y', (d) => yScale(d.category))
+        //     .style('fill', 'rgb(48, 53, 56)');
+        // lines
+        //     .attr('width', 2)
+        //     .attr('height', yScale.bandwidth())
+        //     .attr('x', xScale(0))
+        //     .attr('y', (d) => yScale(d.category));
+        // lines.exit().remove();
 
-        let scale = this.scaleGroup
-            .selectAll('.scale-bar')
-            .data(this.viewModel.dataPoints);
-        scale.enter()
-            .append('rect')
-            .classed('scale-bar', true)
-            .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
-            .attr('height', innerYScale.bandwidth())
-            .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
-            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2))
-            .attr('rx', 1)
-            .attr('ry', 1)
-            .style('fill', 'rgb(48, 53, 56)');
-        scale
-            .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
-            .attr('height', innerYScale.bandwidth())
-            .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
-            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2));
-        scale.exit().remove();
+        // let scale = this.scaleGroup
+        //     .selectAll('.scale-bar')
+        //     .data(this.viewModel.dataPoints);
+        // scale.enter()
+        //     .append('rect')
+        //     .classed('scale-bar', true)
+        //     .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
+        //     .attr('height', innerYScale.bandwidth())
+        //     .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
+        //     .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2))
+        //     .attr('rx', 1)
+        //     .attr('ry', 1)
+        //     .style('fill', 'rgb(48, 53, 56)');
+        // scale
+        //     .attr('width', (d) => (d.value >= 0) ? posXScale(d.value) : posXScale(d.value * -1))
+        //     .attr('height', innerYScale.bandwidth())
+        //     .attr('x', (d) => (d.value >= 0) ? xScale(0) : xScale(d.value))
+        //     .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2));
+        // scale.exit().remove();
 
         let display = this.display
             .selectAll('.display-num')
@@ -218,14 +233,14 @@ export class Visual implements IVisual {
             .attr('x', (d) => (d.value >= 0)
                 ? xScale(0) + posXScale(d.value) + (width / 80)
                 : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
-            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2.9))
+            .attr('y', (d) => yScale(d.category) + yScale.bandwidth() / 1.5)
             .style('font-weight', 'bold')
             .style('color', 'rgb(48, 53, 56)');
         display
             .attr('x', (d) => (d.value >= 0)
                 ? xScale(0) + posXScale(d.value) + (width / 80)
                 : xScale(d.value) + posXScale(d.value * -1) + (width / 80))
-            .attr('y', (d) => yScale(d.category) + (innerYScale.bandwidth() * 2.9));
+            .attr('y', (d) => yScale(d.category) + yScale.bandwidth() / 1.5);
 
         this.svg
             .attr('transform', 'translate(60, -20)');
